@@ -6,17 +6,27 @@ let AlphabetIndex input =
     Alphabet |> Seq.findIndex (fun x -> x = input)
 
 let Modulus a b = (((a) % b + b) % b)
+type TypeEncrypt =
+    | Sum
+    | Subtract
 
-let shift = 3
+let Shift input shiftCount encrypt =
+    let operation =
+        match encrypt with
+        | Sum -> (fun x -> x + shiftCount)
+        | Subtract -> (fun x -> x - shiftCount)
+
+    match input with
+    | null -> ""
+    | "" -> ""
+    | _ -> Seq.toList ((input: string).ToUpper())
+        |> Seq.map (fun letter -> Alphabet.Item(Modulus (operation (AlphabetIndex letter)) 26) |> string)
+        |> Seq.reduce (+)
+        |> string
+
 
 let Encrypt input =
-    Seq.toList (input: string)
-    |> Seq.map (fun letter -> Alphabet.Item(Modulus ((AlphabetIndex letter) - shift) 26) |> string)
-    |> Seq.reduce (+)
-    |> string
+    Shift input 3 Subtract
 
 let Decrypt input =
-    Seq.toList (input: string)
-    |> Seq.map (fun letter -> Alphabet.Item(Modulus ((AlphabetIndex letter) + shift) 26) |> string)
-    |> Seq.reduce (+)
-    |> string 
+    Shift input 3 Sum
